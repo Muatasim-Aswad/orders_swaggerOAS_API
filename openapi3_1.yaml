@@ -1,0 +1,205 @@
+# 1. View documentation: Import this file into Swagger UI (https://editor-next.swagger.io)
+# 2. Test: Run the API server and use the endpoints with tools like Postman/cURL or within the swagger UI
+
+openapi: 3.1.0
+info:
+  title: Online Order API
+  version: 1.0.0
+  description: A basic API for working with the swagger tools. The API itself is for managing online orders. The API allows creating, retrieving, updating, and deleting orders.
+  contact:
+    name: Asim
+    url: https://github.com/Muatasim-Aswad
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:{port}
+    description: Development server
+    variables:
+      port:
+        default: '8000'
+paths:
+  /orders:
+    get:
+      summary: Get all of the orders data
+      description: Retrieve all orders' information from orders.json file.
+      operationId: get_orders
+      tags:
+        - Orders
+        - all
+      responses:
+        '200':
+          description: A list of all orders in the system
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+              examples:
+                example1:
+                  value:
+                    - id: '001'
+                      name: 'Carey Maynard'
+                      state: 'pending'
+                    - id: '002'
+                      name: 'Angelo Ayala'
+                      state: 'pending'
+                    - id: '003'
+                      name: 'Regina Yates'
+                      state: 'pending'
+                    - id: '004'
+                      name: 'Elliott Mcclure'
+                      state: 'pending'
+    post:
+      summary: Creates a new order
+      description: This path is used to add a new order to the orders.json file.
+      operationId: post_neworder
+      tags:
+        - Orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+            examples:
+              example1:
+                value:
+                  id: '001'
+                  name: 'Carey Maynard'
+                  state: 'pending'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                example1:
+                  value:
+                    id: '001'
+                    name: 'Carey Maynard'
+                    state: 'pending'
+        '400':
+          description: Invalid input, missing or incorrect fields.
+
+  /orders/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: The unique identifier of the order to be targeted
+    get:
+      summary: Gets the order data
+      description: Retrieve the order information from the orders.json file.
+      operationId: get_order
+      tags:
+        - Orders
+      responses:
+        '200':
+          description: Order found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                example1:
+                  value:
+                    id: '001'
+                    name: 'Carey Maynard'
+                    state: 'pending'
+        '404':
+          description: Order not found
+    put:
+      summary: Updates an existing order
+      description: This path is used to change the state of an order matching the provided id.
+      operationId: put_update
+      tags:
+        - Orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdate' # Referencing the new schema
+            examples:
+              example1:
+                value:
+                  state: 'shipped'
+      responses:
+        '200':
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                example1:
+                  value:
+                    id: '001'
+                    name: 'Carey Maynard'
+                    state: 'shipped'
+        '404':
+          description: Order not found
+    delete:
+      summary: Deletes an existing order
+      description: This path is used to delete an order with a matching id.
+      operationId: delete_order
+      tags:
+        - Orders
+      responses:
+        '204':
+          description: Order deleted successfully
+        '404':
+          description: Order not found
+
+components:
+  schemas:
+    Order:
+      type: object
+      required:
+        - id
+        - name
+        - state
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the order
+        name:
+          type: string
+          description: Name of the customer
+        state:
+          type: string
+          enum:
+            - 'pending'
+            - 'processing'
+            - 'shipped'
+            - 'delivered'
+            - 'canceled'
+          description: The current state of the order
+      examples:
+        - example1:
+          value:
+            id: '001'
+            name: 'Carey Maynard'
+            state: 'pending'
+    OrderUpdate:
+      type: object
+      required:
+        - state
+      properties:
+        state:
+          type: string
+          enum:
+            - 'pending'
+            - 'processing'
+            - 'shipped'
+            - 'delivered'
+            - 'canceled'
+          description: The new state of the order
+      examples:
+        - example1:
+          value:
+            state: 'shipped'

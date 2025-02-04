@@ -1,0 +1,3 @@
+apis:
+  'openapi: 3.0.yml':
+    alias: online-order-api
